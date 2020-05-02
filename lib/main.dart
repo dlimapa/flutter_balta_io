@@ -7,10 +7,10 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Todo App',
+      title: 'ToDo List',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.green,
+        primaryColor: Colors.blue,
       ),
       home: HomePage(),
     );
@@ -32,37 +32,62 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  //Controla as modificações na caixa de texto
+  var newTaskCtrl = TextEditingController();
+
+  void add() {
+    if (newTaskCtrl.text.isEmpty) return;
+    setState(() {
+      widget.items.add(Item(
+        title: newTaskCtrl.text,
+        done: false,
+      ));
+      newTaskCtrl.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     debugPrint('executando o build');
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Todo List'),
-          leading: Text('leading'),
-          actions: <Widget>[
-            Icon(
-              Icons.plus_one,
-            ),
-          ],
+      appBar: AppBar(
+        title: TextFormField(
+          controller: newTaskCtrl,
+          keyboardType: TextInputType.text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+          decoration: InputDecoration(
+            labelText: "Nova tarefa",
+            labelStyle: TextStyle(color: Colors.white),
+          ),
         ),
-        body: ListView.builder(
-          itemCount: widget.items.length,
-          itemBuilder: (BuildContext ctxt, int index) {
-            final item = widget.items[index];
+      ),
+      body: ListView.builder(
+        itemCount: widget.items.length,
+        itemBuilder: (BuildContext ctxt, int index) {
+          final item = widget.items[index];
 
-            return CheckboxListTile(
-              title: Text(item.title),
-              key: Key(item.title),
-              value: item.done,
-              onChanged: (value) {
-                print(value);
-                setState(() {
-                  //widget.items[index].done = value;
-                  item.done = value;
-                });
-              },
-            );
-          },
-        ));
+          return CheckboxListTile(
+            title: Text(item.title),
+            key: Key(item.title),
+            value: item.done,
+            onChanged: (value) {
+              print(value);
+              setState(() {
+                //widget.items[index].done = value;
+                item.done = value;
+              });
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        backgroundColor: Colors.pink,
+        onPressed: add,
+      ),
+    );
   }
 }
