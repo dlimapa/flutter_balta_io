@@ -34,6 +34,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    debugPrint('executando o build');
     return Scaffold(
         appBar: AppBar(
           title: Text('Todo List'),
@@ -55,6 +56,10 @@ class _HomePageState extends State<HomePage> {
               value: item.done,
               onChanged: (value) {
                 print(value);
+                setState(() {
+                  //widget.items[index].done = value;
+                  item.done = value;
+                });
               },
             );
           },
