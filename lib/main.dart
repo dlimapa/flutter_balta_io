@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_balta_io/model/item.dart';
 
 void main() => runApp(App());
@@ -21,7 +24,7 @@ class HomePage extends StatefulWidget {
   var items = new List<Item>();
 
   HomePage() {
-    // items = [];
+    items = [];
     // items.add(Item(title: "Item 1", done: false));
     // items.add(Item(title: "Item 2", done: true));
     // items.add(Item(title: "Item 3", done: false));
@@ -53,8 +56,28 @@ class _HomePageState extends State<HomePage> {
   }
 
   //A leitura nunca é real time.
-  load() async {
+  //Future: funciona como uma promessa
+  Future load() async {
+    //Aguardar até o SharedPreferences carregar
+    var prefs = await SharedPreferences.getInstance();
 
+    var data = prefs.getString('data');
+
+    if (data != null) {
+      //Aqui temos um Iterable genérico.
+      Iterable decoded = jsonDecode(data);
+      //Montando a lista de itens.
+      List<Item> result = decoded.map((x) => Item.fromJson(x)).toList();
+
+      setState(() {
+        widget.items = result;
+      });
+    }
+  }
+
+  _HomePageState() {
+    //Recuerando os items slavos no SharedPreferences
+    load();
   }
 
   @override
@@ -98,7 +121,10 @@ class _HomePageState extends State<HomePage> {
               color: Colors.red.withOpacity(0.2),
             ),
             onDismissed: (direction) {
-              remove(index);
+              print(direction);
+              if (direction == DismissDirection.startToEnd) {
+                remove(index);
+              }
             },
           );
         },
